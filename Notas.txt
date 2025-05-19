@@ -1,0 +1,20 @@
+Pasos generar archivo de despliegue con Streamlit: Descargr python v3.11, Replicar, copiar código compartido en repositorio, generar .Bat, Subir a Streamlit
+
+Cuidad al desplegr: Si las clas se renombrn en archiv, el modelo desplegad pued no identifcr la nuev form de renombr las classs; Tener la mism versión (3.11) para evitr conflcts de versns; requirements.txt -> Incluir todas las librerías empleadas (con ==, se supone que debería hacer lo mismo que se tiene en el archivo); Lo bueno de pycharm es que se señalan este tipo dee cosas si falta alguna librería; "Despliegue en nube (cloud)" -> Proyecto visible para calificadores del curso antes de que finalice
+
+Interfz de Streamlit: Original data and predictions -> dats resaltados (predicción dif a valr real)
+
+h5 -> Reds Neuronls; yorly -> Scikit - Learn
+
+Tres clases: ModelController.py -> Contrl de modelos, DataPreprocessing.py -> Preprocesamiento de datos, streamlit_app.py -> Generación app
+
+Dos colabs: Uno para entrenar model, otro para invocarl (desplegrl y probr predccns)
+
+Se recomiend probar despligue tiemp ants de terminr de entrenr model
+
+
+
+
+Foco proy: Presentr métrics visls al usuar, compar class predichs y valrs reals; Adorns proy: ID usuario, presentacn, formt, dems
+
+Minimamente al sustentr presentr streamlit (interfz de modelos). Hacr fronted, si se pued
