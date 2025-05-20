@@ -7,10 +7,11 @@ from io import StringIO
 
 import joblib
 from src.model.DataPreprocessingRF import DataPreprocessingRF
-from src.model.DataPreprocessingMS import DataPreprocessingMS
-from src.model.DataPreprocessing3 import DataPreprocessing3
-from src.model.DataPreprocessing4 import DataPreprocessing4
-from src.model.DataPreprocessing5 import DataPreprocessing5
+#from src.model.DataPreprocessingMS import DataPreprocessingMS
+#from src.model.DataPreprocessing3 import DataPreprocessing3
+#from src.model.DataPreprocessing4 import DataPreprocessing4
+#from src.model.DataPreprocessing5 import DataPreprocessing5
+#TODO
 
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, classification_report
 
@@ -27,16 +28,16 @@ class ModelController:
         #self.svc_model_path = osp.join(self.model_path, "svc_model.joblib")
 
         self.RandomForest_model_path = osp.join(self.model_path, "df1RandomForest.joblib")
-        self.MeanShift_model_path = osp.join(self.model_path, "df4MeanShift.joblib")
-        self.OneClassSVM_model_path = osp.join(self.model_path, "df5OneClassSVM.joblib")
-        self.LinearRegression_model_path = osp.join(self.model_path, "dfRegresion.joblib")
+        #self.MeanShift_model_path = osp.join(self.model_path, "df4MeanShift.joblib")
+        #self.OneClassSVM_model_path = osp.join(self.model_path, "df5OneClassSVM.joblib")
+        #self.LinearRegression_model_path = osp.join(self.model_path, "dfRegresion.joblib")
         #TODO
 
         #Cargar los modelos
         self.RandomForest_model = joblib.load(self.RandomForest_model_path)
-        self.MeanShift_model = joblib.load(self.MeanShift_model_path)
-        self.OneClassSVM_model = joblib.load(self.OneClassSVM_model_path)
-        self.LinearRegression_model = joblib.load(self.LinearRegression_model_path)
+        #self.MeanShift_model = joblib.load(self.MeanShift_model_path)
+        #self.OneClassSVM_model = joblib.load(self.OneClassSVM_model_path)
+        #self.LinearRegression_model = joblib.load(self.LinearRegression_model_path)
         #TODO
 
         # Inicializar variables
@@ -49,7 +50,7 @@ class ModelController:
 
         # Clase de preprocesamiento de la información
         self.d_processing_RF = DataPreprocessingRF()
-        self.d_processing_MS = DataPreprocessingMS()
+        #self.d_processing_MS = DataPreprocessingMS()
         #TODO
 
 
@@ -142,12 +143,13 @@ def evaluation_metrics(self):
 
 
 
-def final_pred(self):
-    if self.y_pred_RF == 1:
-        if #TODO
+#def final_pred(self):
+#    if self.y_pred_RF == 1:
+#        if #TODO
 
-    return (mensaje, valorizacion, imagen)
+#    return (mensaje, valorizacion, imagen)
 
-    #Probar RF y luego con los demás de a pocos. De streamlit falta formulario y habría que ingresar un conjunto de datos test (agregar esta parte que también)
+    #Probar RF y luego con los demás de a pocos. De streamlit falta formulario y habría que ingresar un conjunto de datos test
+    # Actualizar modelo RF actualizado de Manuel
 
 
