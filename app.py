@@ -11,6 +11,9 @@ model_success = joblib.load("dfRegresion.joblib")
 model_anom     = joblib.load("df4IsolationForest.joblib")
 model_fail     = joblib.load("df5OneClassSVM.joblib")
 
+
+
+
 st.set_page_config(page_title="Evaluación de tu Startup", layout="centered")
 st.title("🚀 Evaluación Interactiva de Startups")
 
@@ -56,10 +59,15 @@ if submit_init:
         "avg_participants":          avg_participants,
         "is_top500":                 is_top500
     }])
+    
     df_init_pre = prepare_input(df_init, model_success)
     label_success = model_success.predict(df_init_pre)[0]
     if label_success == 1:
         st.success("✅ Tu startup va por buen camino")
+
+
+
+    
         with st.form("form_anom"):
             Startup_Name             = st.text_input("Nombre de la startup", value="MiStartup")
             Industry                 = st.text_input("Industria (texto libre)", value="tech")

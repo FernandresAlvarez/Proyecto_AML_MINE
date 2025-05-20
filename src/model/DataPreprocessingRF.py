@@ -1,3 +1,5 @@
+#RandomForest
+
 import numpy as np
 import pandas as pd
 
@@ -5,12 +7,14 @@ class DataPreprocessing:
 
     def __init__(self):
         print("DataPreprocessing.__init__ ->")
-        self.target_feature = "TravelInsurance"
+        self.target_feature = "labels"
 
     def transform(self, df):
         print("DataPreprocessing.transform ->")
-        X_test, Y_test = df.drop([self.target_feature], axis=1), df[self.target_feature]
+        X_test, Y_test = df.drop([self.target_feature, "status"], axis=1), df[self.target_feature]
         return X_test, Y_test
+
+
 
     def get_categories(self):
         print("DataPreprocessing.get_categories ->")
