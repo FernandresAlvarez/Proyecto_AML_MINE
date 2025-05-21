@@ -7,12 +7,12 @@ class DataPreprocessingRF:
 
     def __init__(self):
         print("DataPreprocessingRF.__init__ ->")
-        self.target_feature = "labels"
+        #self.target_feature = "labels"
 
     def transform(self, df):
         print("DataPreprocessingRF.transform ->")
-        X_test, Y_test = df.drop([self.target_feature], axis=1), df[self.target_feature]
-        return X_test, Y_test
+        X_test = df
+        return X_test
 
     def get_categories(self):
         print("DataPreprocessingRF.get_categories ->")
