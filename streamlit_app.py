@@ -19,7 +19,7 @@ ctrl = ModelController()
 
 
 # Presentamos la inforamción de forma tabulada o pestañas
-tab1, tab2, tab3, tab4, tab5, tab6, tab7 = st.tabs(["Random Forest", "MeanShift", "Decision Tree", "OneClassSVM", "MLPRegressor", "Start-Up State", "Stats"])
+tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Random Forest", "Clusterización", "OneClassSVM", "MLPRegressor", "Start-Up State", "Stats"])
 
 
 
@@ -112,6 +112,41 @@ with tab1:
                 st.warning("🚨 Start Up probablemente en riesgo")
     except:
         st.error("Something happened", icon="🚨")
+
+
+with tab2:
+        st.form("form MLPRegressor")
+
+        is_enterprise= st.selectbox("¿Es empresa?", [1, 0])
+        has_roundA= st.selectbox("¿Tiene ronda A?", [1, 0])
+        is_ecommerce= st.selectbox("¿Es E-commerce?", [1, 0])
+        is_advertising= st.selectbox("¿Es publicidad?", [1, 0])
+        is_CA= st.selectbox("¿Es CA?", [1, 0])
+        is_MA= st.selectbox("¿Es MA?", [1, 0])
+        has_roundD= st.selectbox("¿Tiene ronda D?", [1, 0])
+        is_mobile= st.selectbox("¿Es mobile?", [1, 0])
+        is_top500= st.selectbox("¿Top 500?", [1, 0])
+        is_TX= st.selectbox("¿Es TX?", [1, 0])
+        avg_participants= st.number_input("Participantes promedio", min_value = 0, value=1)
+        milestones= st.number_input("Número de rondas de fondos", min_value = 0, value=2)
+        is_software= st.selectbox("¿Es de software?", [1, 0])
+        is_web= st.selectbox("¿Es web?", [1, 0])
+        category_code= st.selectbox("Categoría", ['software', 'web', 'mobile', 'enterprise', 'advertising', 'games_video', 'semiconductor', 'biotech', 'network_hosting', 'hardware', 'public_relations', 'ecommerce', 'cleantech', 'analytics', 'security', 'social', 'search', 'messaging', 'other', 'news', 'travel', 'fashion', 'photo_video', 'medical', 'music', 'finance', 'education', 'real_estate', 'consulting', 'health', 'automotive', 'transportation', 'manufacturing', 'hospitality', 'sports'])
+        is_consulting= st.selectbox("¿Consulta?", [1, 0])
+        is_otherstate= st.selectbox("¿Es de otro estado?", [1, 0])
+        is_gamesvideo= st.selectbox("¿Es de videojuegos?", [1, 0])
+        relationships= st.number_input("Número de relaciones", min_value=0, value=1)
+        funding_total_usd= st.number_input("Fondos Totales en USD", min_value=0.0, value=1000.0)
+        has_angel= st.selectbox("¿Tiene angel?", [1, 0])
+        has_roundB= st.selectbox("¿Tiene ronda B?", [1, 0])
+        has_VC= st.selectbox("¿Tiene VC?", [1, 0])
+        is_biotech= st.selectbox("¿Es de biotecnología?", [1, 0])
+        #labels= st.selectbox("¿Adquirida o cerrada?", [1, 0])
+        has_roundC= st.selectbox("¿Tiene ronda C?", [1, 0])
+        is_othercategory= st.selectbox("¿Es de otra categoría?", [1, 0])
+        funding_rounds= st.number_input("Número de rondas de fondos", min_value=0, value=1)
+        is_NY = st.selectbox("¿Es de NY?", [1, 0])
+        submit_init = st.form_submit_button("Evaluar inicio")
 
 
 
