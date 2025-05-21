@@ -266,5 +266,3 @@ with tab4:
         except:
             st.error("Something happened", icon="🚨")
 
-    # Tener presentes predicts de cada modelo para presentar resultado final
-
