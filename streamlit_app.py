@@ -19,7 +19,8 @@ ctrl = ModelController()
 
 
 # Presentamos la inforamción de forma tabulada o pestañas
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Random Forest", "Clusterización", "OneClassSVM", "MLPRegressor", "Start-Up State", "Stats"])
+tab1, tab2, tab3, tab4 = st.tabs(["Random Forest", "Clusterización", "OneClassSVM", "MLPRegressor"])
+#tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs(["Random Forest", "Clusterización", "OneClassSVM", "MLPRegressor", "Start-Up State", "Stats"])
 
 
 
@@ -114,6 +115,102 @@ with tab1:
             st.error("Something happened", icon="🚨")
 
 
+with tab2:
+    with st.form("form_Cluster"):
+        st.markdown("#### Selecciona las razones de fallo que aplican a tu startup:")
+
+        giants                  = st.checkbox("¿Enfrenta competencia con los gigantes de tecnología?", value=False)
+        acquisition_stagnation  = st.checkbox("¿Su empresa fue adquirida y se estancó tras la adquisición?", value=False)
+        platform_dependency     = st.checkbox("¿Su empresa depende de una plataforma no propia?", value=False)
+        execution_flaws         = st.checkbox("¿Su empresa tiene problemas de dirección o técnicos?", value=False)
+        monetization_failure    = st.checkbox("¿Logra convertir suficientes usuarios en ingresos?", value=False)
+        niche_limits            = st.checkbox("¿Está en un nicho muy limitado?", value=False)
+        overhyped               = st.checkbox("¿Se tienen expectativas demasiado altas sobre su compañía?", value=False)
+        regulatory_issues       = st.checkbox("¿Enfrenta problemas regulatorios?", value=False)
+        poor_market_fit         = st.checkbox("¿Hay suficiente demanda por su producto o servicio?", value=False)
+        no_budget               = st.checkbox("¿Cuenta con presupuesto suficiente para continuar?", value=False)
+        trend_shifts            = st.checkbox("¿Sus usuarios presentan tendencias que los alejan de la compañía?", value=False)
+        competition             = st.checkbox("¿Enfrenta competencia directa intensa?", value=False)
+        toxicity                = st.checkbox("¿Sus usuarios confían en sus productos y lo respaldan?", value=False)
+
+        submit_cluster = st.form_submit_button("Ejecutar clustering")
+
+        if submit_cluster:
+            # Construimos el DataFrame 1/0
+            df_init = pd.DataFrame([{
+                'Giants':                   int(giants),
+                'Acquisition Stagnation':   int(acquisition_stagnation),
+                'Platform Dependency':      int(platform_dependency),
+                'Execution Flaws':          int(execution_flaws),
+                'Monetization Failure':     int(monetization_failure),
+                'Niche Limits':             int(niche_limits),
+                'Overhype':                 int(overhyped),
+                'Regulatory Pressure':      int(regulatory_issues),
+                'Poor Market Fit':          int(poor_market_fit),
+                'No Budget':                int(no_budget),
+                'Trend Shifts':             int(trend_shifts),
+                'Competition':              int(competition),
+                'Toxicity/Trust Issues':    int(toxicity)
+            }])
+
+            # Predicción MeanShift y Decision Tree
+            ms_df, ms_labels = ctrl.predict_ms(df_init)
+            dt_df, dt_labels = ctrl.predict_dt(df_init)
+
+            # Mostrar resultados
+            st.subheader("🔍 Resultados de Clusterización")
+            st.dataframe(ms_df.assign(Cluster_DT=dt_labels))
+
+            # Mensajes
+            st.info(f"📌 Fue asignado al cluster {ms_labels[0]} según MeanShift.")
+            if dt_labels[0] == 1:
+                st.error("🚨 Según el árbol de decisión, la probabilidad de fracaso es ALTA.")
+            else:
+                st.warning("⚠️ Según el árbol de decisión, la probabilidad de fracaso es MODERADA.")
+
+
+
+
+
+
+with tab3:
+    with st.form("form_SVM"):
+        st.markdown("#### Ingresa los datos para OneClassSVM:")
+
+        industry                = st.selectbox("Industry", ctrl.get_svm_industries())
+        startup_age             = st.number_input("Startup Age", min_value=0.0, value=8.0)
+        funding_amount          = st.number_input("Funding Amount", min_value=0.0, value=1e7)
+        revenue                 = st.number_input("Revenue", min_value=0.0, value=5e6)
+        cust_ret_rate           = st.number_input("Customer Retention Rate", min_value=0.0, max_value=1.0, value=0.8)
+        rev_to_burn_ratio       = st.number_input("Revenue to Burn Ratio", min_value=0.0, value=5.0)
+        employees_count         = st.number_input("Employees Count", min_value=0.0, value=50.0)
+        high_retention          = st.selectbox("High Retention (1=Sí, 0=No)", [1, 0])
+
+        submit_svm = st.form_submit_button("Evaluar SVM")
+
+        if submit_svm:
+            df_svm = pd.DataFrame([{
+                'Industry':                    industry,
+                'Startup_Age':                 startup_age,
+                'Funding_Amount':              funding_amount,
+                'Revenue':                     revenue,
+                'Customer_Retention_Rate':     cust_ret_rate,
+                'Revenue_to_Burn_Ratio':       rev_to_burn_ratio,
+                'Employees_Count':             employees_count,
+                'High_Retention':              high_retention
+            }])
+
+            svm_df, svm_labels = ctrl.predict_ocsvm(df_svm)
+
+            st.subheader("🔍 Resultados OneClassSVM")
+            st.dataframe(svm_df)
+
+            # Interpretación de 1 / -1
+            if svm_labels[0] == 1:
+                st.success("✅ Alta probabilidad de éxito")
+            else:
+                st.info("ℹ️ Probabilidad moderada de éxito")
+
 
 with tab4:
 
@@ -130,7 +227,7 @@ with tab4:
         total_funding = st.number_input("Fondos totales", min_value = 0, value=2)
         Industry = st.selectbox("¿En cuál industria se encuentra la empresa?", ['Tech Services', 'Fintech', 'AI', 'Environmental', 'Finance', 'IT Security', 'Software', 'Analytics', 'Hospital/Healthcare', 'Digital Health', 'Biotech', 'Insurance', 'Electronics', 'Food', 'Medical Equip', 'Automotive', 'Aviation', 'HRTech', 'Energy', 'Real Estate', 'Investments', 'Entertainment', 'Mining', 'DevOps', 'Telecom', '3D', 'Health', 'Utilities', 'Hospitality', 'Construction', 'Industrial', 'Consumer', 'Martech', 'Transportation', 'NonProfit', 'Engineering', 'EdTech', 'Hardware', 'Research', 'Energy/Oil', 'Media', 'Retail', 'Edtech', 'Casinos', 'Marketing', 'Consulting', 'Defense', 'Logistics', 'SaaS', 'Security', 'Education', 'Wireless', 'Recruiting', 'eCommerceTech', 'Technology, Information and Internet', 'Advertising', 'Pharma', 'Babytech', 'Farming', 'Computer and Network Security', 'Restaurants', 'Technology', 'Maritime', 'Accounting', 'Robotics', 'Adtech', 'Semiconductors', 'Sports', 'Aviatioon', 'Veterinary', 'Chemicals', 'Manufacturing', 'Medical', 'Business Intelligence', 'Chemical Manufacturing', 'Gaming', 'Apparel', 'HR', 'VR', 'eCommerce', 'Facilities', 'Information Technology', 'Social Services', 'Medical Offices', 'Materials', 'Health, Wellness & Fitness', 'Machinery', 'Support/CRM Tech', 'Banking', 'Leisure', 'Leasing Real Estate', 'Cosmetics', 'Hospital/Health', 'Research Services', 'Cloud', 'Blockchain', 'Healthcare', 'Real Estate Tech', 'E-Learning Providers', 'Legaltech', 'Foodtech', 'Information Technology & Services', 'DeliveryTech', 'Retail Health and Personal Care Products', 'Events', 'Computers and Electronics Manufacturing', 'AdTech', 'LegalTech', 'Networking', 'BabyTech', 'Services for Renewable Energy', 'Outsourcing and Offshoring Consulting', 'Design', 'Think Tanks', 'Investment Banks', 'Furniture and Home Furnishings Manufacturing', 'IoT', 'Executive', 'Supplies', 'Oil and Gas', 'Wholesale Building Materials', 'Outsource', 'Travel Arrangements', 'Cannabis', 'ProductivityTech', 'Clean Tech', 'Legal', 'Recreation', 'Nonprofit', 'Professional Training and Coaching', 'Printing Services', 'HRtech', 'Gambling Facilities and Casinos', 'Publishing', 'Airlines and Aviation', 'Plastics', 'Fitness', 'Venture Capital and Private Equity Principals', 'Spectator Sports', 'Cryptocurrency', 'Music', 'Computer Networking Products', 'Trucking', 'Retail Luxury Goods and Jewelry', 'Event Tech'])
         Points = st.number_input("Número de puntos de la empresa", min_value = 0, value=5)
-        valuation = st.number_input("Valoración de la empresa", min_value =0.0, value=1000.0)
+        valuation = st.number_input("Ingresos en USD de la empresa", min_value =0.0, value=1000.0)
         best_score = st.number_input("Mejor puntuación de la empresa", min_value = 0, value=0)
         #match_score = st.number_input("Puntuación de partida de la empresa", min_value = 0, value=0)
         score_category = st.selectbox("¿En cuál categoría se encuentra la empresa?", ['Dudosa (70-84)', 'Buena (85-94)', 'Excelente (95-100)', 'No Match (<70)'])
@@ -164,7 +261,7 @@ with tab4:
                 st.subheader("🔍 Predicciones realizadas")
                 st.dataframe(MLPR_df[0])
 
-                st.success(f"✅ Start Up exitosa con una valoración de: {MLPR_df[1][0]} USD")
+                st.success(f"✅ Start Up con una valoración de: {MLPR_df[1][0]} USD")
             
         except:
             st.error("Something happened", icon="🚨")

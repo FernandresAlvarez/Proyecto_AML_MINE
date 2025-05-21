@@ -1,134 +1,135 @@
+# src/back/ModelController.py
+
 import Definitions
-
-import numpy as np
 import os.path as osp
-import pandas as pd
-from io import StringIO
-
 import joblib
+import pandas as pd
+
 from src.model.DataPreprocessingRF import DataPreprocessingRF
+from src.model.DataPreprocessingMS import DataPreprocessingMS
 from src.model.DataPreprocessingMLPRegressor import DataPreprocessingMLPRegressor
-#from src.model.DataPreprocessingMS import DataPreprocessingMS
-#from src.model.DataPreprocessing3 import DataPreprocessing3
-#from src.model.DataPreprocessing4 import DataPreprocessing4
-#from src.model.DataPreprocessing5 import DataPreprocessing5
-#TODO
-
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, classification_report
-
-
 
 class ModelController:
 
     def __init__(self):
         print("ModelController.__init__ ->")
-        # Asegura en una variable la ruta de los modelos
-        self.model_path = osp.join(Definitions.ROOT_DIR, "resources/models")
-        #TODO
+        # Ruta base donde están los .joblib
+        base = osp.join(Definitions.ROOT_DIR, "resources/models")
 
-        self.RandomForest_model_path = osp.join(self.model_path, "df1RandomForest.joblib")
-        self.MLPRegressor_model_path = osp.join(self.model_path, "df6MLPRegressor.joblib")
-        #self.MeanShift_model_path = osp.join(self.model_path, "df4MeanShift.joblib")
-        #self.OneClassSVM_model_path = osp.join(self.model_path, "df5OneClassSVM.joblib")
-        #self.LinearRegression_model_path = osp.join(self.model_path, "dfRegresion.joblib")
-        #TODO
+        # Paths a tus modelos serializados
+        self.RandomForest_model_path         = osp.join(base, "df1RandomForest.joblib")
+        self.MeanShift_model_path            = osp.join(base, "df4MeanShift.joblib")
+        self.DecisionTreeClusters_model_path = osp.join(base, "dfClustersDecisionTree.joblib")
+        self.OneClassSVM_model_path          = osp.join(base, "df5OneClassSVM.joblib")
+        self.MLPRegressor_model_path         = osp.join(base, "df6MLPRegressor.joblib")
 
-        #Cargar los modelos
+        # Carga de los modelos
         self.RandomForest_model = joblib.load(self.RandomForest_model_path)
+        self.MeanShift_model    = joblib.load(self.MeanShift_model_path)
+        self.DT_model           = joblib.load(self.DecisionTreeClusters_model_path)
+        self.OCSVM_model        = joblib.load(self.OneClassSVM_model_path)
         self.MLPRegressor_model = joblib.load(self.MLPRegressor_model_path)
-        #self.MeanShift_model = joblib.load(self.MeanShift_model_path)
-        #self.OneClassSVM_model = joblib.load(self.OneClassSVM_model_path)
-        #self.LinearRegression_model = joblib.load(self.LinearRegression_model_path)
-        #TODO
 
-        # Inicializar variables
-        self.X_test_RF = ""
-        self.Y_test_RF = ""
-        self.y_pred_RF = ""
-        
-        self.X_test_MLPRegressor = ""
-        self.Y_test_MLPRegressor = ""
-        self.y_pred_MLPRegressor = ""
+        # Extraer categorías de Industry para el UI de SVM
+        # Asume que tu pipeline OCSVM tiene un step 'preprocessing' con un transformer 'cat'
+        try:
+            ct = (self.OCSVM_model
+                  .named_steps['preprocessing']
+                  .named_transformers_['cat'])
+            self.svm_industries = list(ct.categories_[0])
+        except Exception:
+            self.svm_industries = []
 
-
-
-
-        # Clase de preprocesamiento de la información
-        self.d_processing_RF = DataPreprocessingRF()
+        # Instanciar tus preprocesadores
+        self.d_processing_RF         = DataPreprocessingRF()
+        self.d_processing_MS         = DataPreprocessingMS()
         self.d_processing_MLPRegressor = DataPreprocessingMLPRegressor()
-        #self.d_processing_MS = DataPreprocessingMS()
-        #TODO
 
 
+    # --- Tab 1: RandomForestClassifier ----------------
     def predict_RF(self, input_data):
-        print("ModelController.predict ->")
+        print("ModelController.predict_RF ->")
+        X = self.d_processing_RF.transform(input_data)
+        y = self.RandomForest_model.predict(X)
 
-        # Generamos la partición de la información
-        self.X_test_RF = self.d_processing_RF.transform(input_data)
-        #print(self.X_test_RF)
-        #TODO
-
-        # Predicciones Isolation Forest, One Class SVM y Regresión Lineal
-        self.y_pred_RF = self.RandomForest_model.predict(self.X_test_RF)
-        #print("La predicción es:", self.y_pred_RF)
-        #TODO
-
-        # Preparamos un dataframe para presentar al usuario final
-        RF_result_df = self.X_test_RF.copy()
-
-        RF_result_df["Predicción"] = self.y_pred_RF
-        RF_result_df["Predicción"] = RF_result_df["Predicción"].replace(
-            {0: self.d_processing_RF.get_cat_name(0), 1: self.d_processing_RF.get_cat_name(1)})
-        #print(RF_result_df)
-        #TODO
-        
-        #RF_result_df[f"Probabilidad Clase {self.d_processing_RF.get_cat_name(0)} (%)"] = y_pred_proba_svc[:, 0]
-        #RF_result_df[f"Probabilidad Clase {self.d_processing_RF.get_cat_name(1)} (%)"] = y_pred_proba_svc[:, 1]
-
-        # Predicciones RF y probabilidad (con redondeo)
-        #y_pred_rf = self.rf_model.predict(X_test)
-        #y_pred_proba_rf = self.svc_model.predict_proba(X_test)
-        #y_pred_proba_rf = np.round(y_pred_proba_rf * 100, 2)
-        #TODO
-
-        # Dataframe compilado
-        #full_result_df = X_test.copy()
-        #full_result_df["Real"] = svc_result_df["Real"]
-        #full_result_df["Predicción SVM"] = svc_result_df["Predicción"]
-        #full_result_df[f"Probabilidad Clase {self.d_processing.get_cat_name(0)} (%) SVM"] = svc_result_df[f"Probabilidad Clase {self.d_processing.get_cat_name(0)} (%)"]
-        #full_result_df[f"Probabilidad Clase {self.d_processing.get_cat_name(1)} (%) SVM"] = svc_result_df[f"Probabilidad Clase {self.d_processing.get_cat_name(1)} (%)"]
-        #full_result_df["Predicción RF"] = rf_result_df["Predicción"]
-        #full_result_df[f"Probabilidad Clase {self.d_processing.get_cat_name(0)} (%) RF"] = rf_result_df[f"Probabilidad Clase {self.d_processing.get_cat_name(0)} (%)"]
-        #full_result_df[f"Probabilidad Clase {self.d_processing.get_cat_name(1)} (%) RF"] = rf_result_df[f"Probabilidad Clase {self.d_processing.get_cat_name(1)} (%)"]
-        #TODO
-        return RF_result_df, self.y_pred_RF
-    
+        df = X.copy()
+        df["Predicción"] = y
+        df["Predicción"] = df["Predicción"].replace({
+            0: self.d_processing_RF.get_cat_name(0),
+            1: self.d_processing_RF.get_cat_name(1)
+        })
+        return df, y
 
 
+    # --- Tab 2 Part A: MeanShift Clustering ----------
+    def predict_ms(self, input_data):
+        print("ModelController.predict_ms ->")
+        # Extraer el objeto MeanShift (si está dentro de un Pipeline)
+        clustering = (
+            self.MeanShift_model.named_steps['clustering']
+            if hasattr(self.MeanShift_model, 'named_steps')
+            else self.MeanShift_model
+        )
+        feature_names = clustering.feature_names_in_
+        # Reindexar tu input para que tenga EXACTAMENTE esas columnas
+        X = input_data.reindex(columns=feature_names, fill_value=0)
+        labels = self.MeanShift_model.predict(X)
+
+        df = X.copy()
+        df["Cluster_MS"] = labels
+        return df, labels
+
+
+    # --- Tab 2 Part B: DecisionTree on Clusters -----
+    def predict_dt(self, input_data):
+        print("ModelController.predict_dt ->")
+        clustering = (
+            self.MeanShift_model.named_steps['clustering']
+            if hasattr(self.MeanShift_model, 'named_steps')
+            else self.MeanShift_model
+        )
+        feature_names = clustering.feature_names_in_
+        X = input_data.reindex(columns=feature_names, fill_value=0)
+        labels = self.DT_model.predict(X)
+
+        df = X.copy()
+        df["Cluster_DT"] = labels
+        return df, labels
+
+
+    # --- Tab 3: OneClassSVM --------------------------
+    def get_svm_industries(self):
+        """Lista de categorías de Industry que entrenó el SVM."""
+        return self.svm_industries
+
+    def predict_ocsvm(self, input_data):
+        print("ModelController.predict_ocsvm ->")
+        # Estas son las columnas que tu pipeline espera
+        feature_cols = [
+            'Industry',
+            'Startup_Age',
+            'Funding_Amount',
+            'Revenue',
+            'Customer_Retention_Rate',
+            'Revenue_to_Burn_Ratio',
+            'Employees_Count',
+            'High_Retention'
+        ]
+        X = input_data.reindex(columns=feature_cols, fill_value=0)
+        preds = self.OCSVM_model.predict(X)
+
+        df = X.copy()
+        df["Anomaly"] = preds
+        df["Anomaly"] = df["Anomaly"].replace({1: "Normal", -1: "Anomalía"})
+        return df, preds
+
+
+    # --- Tab 4: MLPRegressor -------------------------
     def predict_MLPRegressor(self, input_data):
-        print("ModelController.predict ->")
+        print("ModelController.predict_MLPRegressor ->")
+        X = self.d_processing_MLPRegressor.transform(input_data)
+        y = self.MLPRegressor_model.predict(X)
 
-        # Generamos la partición de la información
-        self.X_test_MLPRegressor = self.d_processing_MLPRegressor.transform(input_data)
-        #print(self.X_test_MLPRegressor)
-        
-        # Predicciones Isolation Forest, One Class SVM y Regresión Lineal
-        self.y_pred_MLPRegressor = self.MLPRegressor_model.predict(self.X_test_MLPRegressor)
-        #print("La predicción es:", self.y_pred_MLPRegressor)
-        
-        # Preparamos un dataframe para presentar al usuario final
-        MLPRegressor_result_df = self.X_test_MLPRegressor.copy()
-
-        MLPRegressor_result_df["Predicción"] = self.y_pred_MLPRegressor
-        #print(MLPRegressor_result_df)
-        
-        return MLPRegressor_result_df, self.y_pred_MLPRegressor
-
-
-
-#def final_pred(self):
-#    if self.y_pred_RF == 1:
-#        if #TODO
-
-#    return (mensaje, valorizacion, imagen)
-
+        df = X.copy()
+        df["Predicción"] = y
+        return df, y
