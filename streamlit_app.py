@@ -57,12 +57,13 @@ with tab1:
         is_othercategory= st.selectbox("¿Es de otra categoría?", [1, 0])
         funding_rounds= st.number_input("Número de rondas de fondos", min_value=0, value=1)
         is_NY = st.selectbox("¿Es de NY?", [1, 0])
+
         submit_init_RF = st.form_submit_button("Evaluar inicio")
 
         try: 
             if submit_init_RF:
 
-                df_init = pd.DataFrame([{
+                df_init_RF = pd.DataFrame([{
                     'is_enterprise' : is_enterprise,
                     'has_roundA': has_roundA,
                     'is_ecommerce': is_ecommerce, 
@@ -93,7 +94,7 @@ with tab1:
                     'is_NY': is_NY        
                 }])
 
-                RF_df = ctrl.predict(df_init)
+                RF_df = ctrl.predict_RF(df_init_RF)
                 #print(RF_df)
                 #RF_df, MS_df, DT_df, OCSVM_df, MLPR_df = ctrl.predict()
                 #FinalPred = ctrl.final_pred() #Tupla para incluir mensaje, imagen y valorización de start up, si fue exitosa
@@ -114,40 +115,57 @@ with tab1:
 
 
 
-with tab2:
+with tab4:
 
     with st.form("form MLPRegressor"):
 
-        is_enterprise= st.selectbox("¿Es empresa?", [1, 0])
-        has_roundA= st.selectbox("¿Tiene ronda A?", [1, 0])
-        is_ecommerce= st.selectbox("¿Es E-commerce?", [1, 0])
-        is_advertising= st.selectbox("¿Es publicidad?", [1, 0])
-        is_CA= st.selectbox("¿Es CA?", [1, 0])
-        is_MA= st.selectbox("¿Es MA?", [1, 0])
-        has_roundD= st.selectbox("¿Tiene ronda D?", [1, 0])
-        is_mobile= st.selectbox("¿Es mobile?", [1, 0])
-        is_top500= st.selectbox("¿Top 500?", [1, 0])
-        is_TX= st.selectbox("¿Es TX?", [1, 0])
-        avg_participants= st.number_input("Participantes promedio", min_value = 0, value=1)
-        milestones= st.number_input("Número de rondas de fondos", min_value = 0, value=2)
-        is_software= st.selectbox("¿Es de software?", [1, 0])
-        is_web= st.selectbox("¿Es web?", [1, 0])
-        category_code= st.selectbox("Categoría", ['software', 'web', 'mobile', 'enterprise', 'advertising', 'games_video', 'semiconductor', 'biotech', 'network_hosting', 'hardware', 'public_relations', 'ecommerce', 'cleantech', 'analytics', 'security', 'social', 'search', 'messaging', 'other', 'news', 'travel', 'fashion', 'photo_video', 'medical', 'music', 'finance', 'education', 'real_estate', 'consulting', 'health', 'automotive', 'transportation', 'manufacturing', 'hospitality', 'sports'])
-        is_consulting= st.selectbox("¿Consulta?", [1, 0])
-        is_otherstate= st.selectbox("¿Es de otro estado?", [1, 0])
-        is_gamesvideo= st.selectbox("¿Es de videojuegos?", [1, 0])
-        relationships= st.number_input("Número de relaciones", min_value=0, value=1)
-        funding_total_usd= st.number_input("Fondos Totales en USD", min_value=0.0, value=1000.0)
-        has_angel= st.selectbox("¿Tiene angel?", [1, 0])
-        has_roundB= st.selectbox("¿Tiene ronda B?", [1, 0])
-        has_VC= st.selectbox("¿Tiene VC?", [1, 0])
-        is_biotech= st.selectbox("¿Es de biotecnología?", [1, 0])
-        #labels= st.selectbox("¿Adquirida o cerrada?", [1, 0])
-        has_roundC= st.selectbox("¿Tiene ronda C?", [1, 0])
-        is_othercategory= st.selectbox("¿Es de otra categoría?", [1, 0])
-        funding_rounds= st.number_input("Número de rondas de fondos", min_value=0, value=1)
-        is_NY = st.selectbox("¿Es de NY?", [1, 0])
-        submit_init = st.form_submit_button("Evaluar inicio")
+        ranking = st.number_input("Ranking de la empresa", min_value = 0, value=0)
+        temp_ranking = st.number_input("Ranking temporal de la empresa", min_value = 0, value=0)
+        previous_ranking = st.number_input("Ranking anterior de la empresa", min_value = 0, value=0)
+        city = st.selectbox("¿En cuál ciudad se encuentra la empresa?", ['San Francisco', 'New York', 'London', 'Palo Alto', 'Toronto', 'Los Angeles', 'Boston', 'Austin', 'Miami', 'Mountain View', 'Cambridge', 'San Diego', 'Dallas', 'Atlanta', 'Washington', 'Seattle', 'Brooklyn', 'Oakland', 'Houston', 'San Jose', 'Chicago', 'Tel Aviv', 'Cleveland', 'Boulder', 'Minneapolis', 'Berkeley', 'Santa Monica', 'Santa Clara', 'Vancouver', 'Bellevue', 'Bangalore', 'Menlo Park', 'Jacksonville', 'Los Altos', 'McLean', 'Stockholm', 'Fremont', 'Berlin', 'Denver', 'Sunnyvale', 'Paris', 'Nashville', 'Calgary', 'Singapore', 'Ventura', 'Phoenix', 'Ann Arbor', 'Durham', 'Arlington', 'Louisville', 'Pasadena', 'Columbia', 'Orlando', 'Salt Lake City', 'Raleigh', 'Redwood City', 'Wilmington', 'Detroit', 'Somerville', 'Saratoga', 'San Mateo', 'Incline Village', 'Baltimore', 'Boca Raton', 'Torrance', 'Waltham', 'Kirkland', 'Concord', 'Pittsburgh', 'Herndon', 'Montreal', 'San Antonio', 'Carmel', 'Sao Paulo', 'Amsterdam', 'Omaha', 'Las Vegas', 'Melbourne', 'Portland', 'Conshohocken', 'Newport Beach', 'Hayward', 'Warren', 'Oslo', 'Lincoln', 'Victoria', 'Tampa', 'Charlottesville', 'Bethesda', 'Netanya', 'Richmond', 'Woburn', 'Ellicott City', 'Scottsdale', 'Chertsey', 'Easton', 'Ridgeland', 'Great Neck', 'Milan', 'Bloomington', 'Ottawa', 'Teaneck', 'Florham Park', 'George Town', 'Hamburg', 'Mortsel', 'Seal Beach', 'Jacksonville Beach', 'Gurgaon', 'Cincinnati', 'Belgrade', 'Linthicum', 'Novato', 'Longmont', 'Little Rock', 'Midland', 'St Louis', 'Cupertino', 'Costa Mesa', 'Las Cruces', 'Broomfield', 'Indore', 'New Philadelphia', 'Thornton', 'Orem', 'Markham', 'Tempe', 'Allentown', 'Merritt Island', 'Evanston', 'Arcadia', "Coeur d'Alene", 'Saint-Ouen', 'Sahibganj', 'Hunt Valley', 'Everett', 'Cheyenne', 'Brisbane City', 'Venice', 'Palm Beach Gardens', 'Sioux Falls', 'Gilbert', 'Farmington Hills', 'Port Townsend', 'NYC', 'Walnut', 'Maitland', 'USA', 'Stratford', 'Overland Park', 'Culver City', 'Zelienople', 'Kent', 'Helsinki', 'Rugby', 'Roxboro', 'State College', 'Iowa City', 'Remote First', 'Silicon Beach', 'Buffalo', 'Solana Beach', 'Collierville', 'Ithaca', 'Carrollton', 'lewisville', 'Remote', 'Hutchinson', 'Fairport', 'Texas', 'Winter Park', 'Stanton', 'Warwick', 'Lakeland North', 'Tysons', 'Ashby de la Zouch', 'Shelton', 'Ferndale', 'Valencia', 'Warszawa', 'Thomaston', 'Mill Valley', 'Grapevine', 'Doswell', 'Seguin', 'Utica', 'Brentwood', 'Albuquerque', 'North Kansas City', 'Newton', 'Rock Hill', 'Pune', 'Emeryville', 'Southfield', 'Carterville', 'Fort Myers', 'Harwell', 'Sacramento', 'Elysburg', 'Newark', 'Indianapolis', 'Santiago', 'Greater Boston', 'Hollywood', 'Englewood', 'Connaught Place', 'Beijing', 'Milton Keynes', 'Noida', 'Stanford', 'Lehi', 'Berkeley Heights', 'Rancho Cordova', 'Mumbai ', 'Campbell', 'Stafford', 'Wekiwa Springs', 'Jupiter', 'Burlington', 'Grand Rapids', 'Cumming', 'Indio', 'Reno', 'Columbus', 'Milpitas', 'Santa Ana', 'Vienna', 'Seocho', 'Munich', 'Santa Barbara', 'Winchester', 'Skokie', 'Lander', 'Harrisonburg', 'Albany', 'Hawthorne', 'Abu Dhabi', 'Pawtucket', 'Provo', 'Camana Bay', 'Auburn', 'Johannesburg', 'Foster City', 'FLORHAM PARK', 'Miami ', 'Huger', 'Edmonton', 'Natick', 'Howell', 'Manhasset', 'Walnut Creek', 'Woodinville', 'Tashkent', 'West Hollywood', 'Lyon', 'Croix', 'Distributed', 'Westerville', 'Washington D.C.', 'West End', 'Flemington', 'Wolf Trap', 'Castlebar', 'Hollister', 'Limassol', 'Seoul', 'Schenectady', 'Brea', 'Tunbridge Wells ', 'Jefferson', 'West Jordan', 'Hauppauge', 'Aliso Viejo', 'Ghaziabad', 'Stamford', 'Irvine', 'Beverly', 'Lowell', 'Immokalee', 'NEW YORK', 'Fort Washington', 'Battle Creek', 'Hamilton', 'Espoo', 'Delhi', 'London W1W 5PE.', 'Groton', 'Chennai', 'Jersey City', 'San Marcos', 'Milton', 'Greenville', 'Canton', 'Fort Lauderdale', 'Burnaby', 'Norfolk', 'West Mifflin', 'Lansing', 'Carlsbad', 'Donnelly', 'Cabazon', 'Coral Gables', 'Oakdale', 'Gainesville', 'Dayton', 'Falls Church', 'South Burlington', 'Irving', 'Lafayette', 'Grand Cayman', 'Hillsborough', 'Dublin City', 'Milford', 'Philadelphia', 'Tampere', 'Giza', 'Manchester', 'Birmingham', 'San Clemente', 'San Franscisco', 'Brookline', 'Doral', 'Madrid', 'Carson City', 'Reading', 'Penryn', 'Beaverton', 'Vaduz', 'Lagos'])        
+        country = st.selectbox("¿En cuál país se encuentra la empresa?", ['United States', 'UK', 'USA', 'CAN', 'Israel', 'IND', 'Germany', 'France', 'SWE', 'SGP', 'ind', 'aus', 'Cayman Islands', 'South Korea', 'Norway', 'Brazil', 'Netherlands', 'Ger', 'United Arab Emirates', 'Egypt', 'China', 'Hong Kong', 'Fra', 'Cyprus', 'Uzbekistan', 'Nigeria', 'Ireland', 'FI', 'Liechtenstein', 'Denmark', 'New Zealand', 'Spain', 'Ind', 'fin', 'Aus', 'FRA', 'Canada', 'bel', 'Chile', 'POL', 'uk', 'net', 'Grenada', 'South Africa'])
+        state = st.selectbox("¿En cuál estado se encuentra la empresa?", ['CA', 'NY', 'TX', 'MA', 'FL', 'WA', 'VA', 'ON', 'CO', 'OH', 'MI', 'IL', 'GA', 'MD', 'PA', 'DC', 'MN', 'NC', 'NJ', 'TN', 'NV', 'UT', 'BC', 'AZ', 'AB', 'IN', 'OR', 'SC', 'NM', 'London', 'CT', 'NE', 'MO', 'ID', 'UK', 'LA', 'QC', 'MT', 'DE', 'WY', 'Maharashtra', 'AR', 'KY', 'VT', 'Ile de France', 'Ca', 'Surrey', 'Great Neck', 'Greater London', 'Woj. Mazowieckie', 'SD', 'MS', 'SP', 'England', 'RI', 'KS', 'Camana Bay', 'AL', 'Washington D.C.', 'IA'])
+        current_employees = st.number_input("Número actual de empleados", min_value = 0, value=1)
+        employee_growth = st.number_input("Crecimiento de empleados", min_value = 0, value=1)
+        total_funding = st.number_input("Fondos totales", min_value = 0, value=2)
+        Industry = st.selectbox("¿En cuál industria se encuentra la empresa?", ['Tech Services', 'Fintech', 'AI', 'Environmental', 'Finance', 'IT Security', 'Software', 'Analytics', 'Hospital/Healthcare', 'Digital Health', 'Biotech', 'Insurance', 'Electronics', 'Food', 'Medical Equip', 'Automotive', 'Aviation', 'HRTech', 'Energy', 'Real Estate', 'Investments', 'Entertainment', 'Mining', 'DevOps', 'Telecom', '3D', 'Health', 'Utilities', 'Hospitality', 'Construction', 'Industrial', 'Consumer', 'Martech', 'Transportation', 'NonProfit', 'Engineering', 'EdTech', 'Hardware', 'Research', 'Energy/Oil', 'Media', 'Retail', 'Edtech', 'Casinos', 'Marketing', 'Consulting', 'Defense', 'Logistics', 'SaaS', 'Security', 'Education', 'Wireless', 'Recruiting', 'eCommerceTech', 'Technology, Information and Internet', 'Advertising', 'Pharma', 'Babytech', 'Farming', 'Computer and Network Security', 'Restaurants', 'Technology', 'Maritime', 'Accounting', 'Robotics', 'Adtech', 'Semiconductors', 'Sports', 'Aviatioon', 'Veterinary', 'Chemicals', 'Manufacturing', 'Medical', 'Business Intelligence', 'Chemical Manufacturing', 'Gaming', 'Apparel', 'HR', 'VR', 'eCommerce', 'Facilities', 'Information Technology', 'Social Services', 'Medical Offices', 'Materials', 'Health, Wellness & Fitness', 'Machinery', 'Support/CRM Tech', 'Banking', 'Leisure', 'Leasing Real Estate', 'Cosmetics', 'Hospital/Health', 'Research Services', 'Cloud', 'Blockchain', 'Healthcare', 'Real Estate Tech', 'E-Learning Providers', 'Legaltech', 'Foodtech', 'Information Technology & Services', 'DeliveryTech', 'Retail Health and Personal Care Products', 'Events', 'Computers and Electronics Manufacturing', 'AdTech', 'LegalTech', 'Networking', 'BabyTech', 'Services for Renewable Energy', 'Outsourcing and Offshoring Consulting', 'Design', 'Think Tanks', 'Investment Banks', 'Furniture and Home Furnishings Manufacturing', 'IoT', 'Executive', 'Supplies', 'Oil and Gas', 'Wholesale Building Materials', 'Outsource', 'Travel Arrangements', 'Cannabis', 'ProductivityTech', 'Clean Tech', 'Legal', 'Recreation', 'Nonprofit', 'Professional Training and Coaching', 'Printing Services', 'HRtech', 'Gambling Facilities and Casinos', 'Publishing', 'Airlines and Aviation', 'Plastics', 'Fitness', 'Venture Capital and Private Equity Principals', 'Spectator Sports', 'Cryptocurrency', 'Music', 'Computer Networking Products', 'Trucking', 'Retail Luxury Goods and Jewelry', 'Event Tech'])
+        Points = st.number_input("Número de puntos de la empresa", min_value = 0, value=5)
+        valuation = st.number_input("Valoración de la empresa", min_value =0.0, value=1000.0)
+        best_score = st.number_input("Mejor puntuación de la empresa", min_value = 0, value=0)
+        #match_score = st.number_input("Puntuación de partida de la empresa", min_value = 0, value=0)
+        score_category = st.selectbox("¿En cuál categoría se encuentra la empresa?", ['Dudosa (70-84)', 'Buena (85-94)', 'Excelente (95-100)', 'No Match (<70)'])
 
 
+
+        submit_init_MLPR = st.form_submit_button("Evaluar inicio")
+
+        try: 
+            if submit_init_MLPR:
+
+                df_init_MLPR = pd.DataFrame([{
+                    'ranking': ranking,
+                    'temp_ranking':temp_ranking,
+                    'previous_ranking':previous_ranking,
+                    'city':city,
+                    'country':country,
+                    'state':state,
+                    'current_employees':current_employees,
+                    'employee_growth':employee_growth,
+                    'total_funding':total_funding,
+                    'Industry':Industry,
+                    'Points':Points,
+                    'valuation':valuation,
+                    'best_score':best_score,
+                    'score_category':score_category,
+                }])
+
+                MLPR_df = ctrl.predict_MLPRegressor(df_init_MLPR)
+                
+                st.subheader("🔍 Predicciones realizadas")
+                st.dataframe(MLPR_df[0])
+
+                st.success(f"✅ Start Up exitosa con una valoración de: {MLPR_df[1][0]} USD")
+            
+        except:
+            st.error("Something happened", icon="🚨")
 

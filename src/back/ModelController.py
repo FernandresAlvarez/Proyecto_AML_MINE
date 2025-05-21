@@ -7,6 +7,7 @@ from io import StringIO
 
 import joblib
 from src.model.DataPreprocessingRF import DataPreprocessingRF
+from src.model.DataPreprocessingMLPRegressor import DataPreprocessingMLPRegressor
 #from src.model.DataPreprocessingMS import DataPreprocessingMS
 #from src.model.DataPreprocessing3 import DataPreprocessing3
 #from src.model.DataPreprocessing4 import DataPreprocessing4
@@ -26,6 +27,7 @@ class ModelController:
         #TODO
 
         self.RandomForest_model_path = osp.join(self.model_path, "df1RandomForest.joblib")
+        self.MLPRegressor_model_path = osp.join(self.model_path, "df6MLPRegressor.joblib")
         #self.MeanShift_model_path = osp.join(self.model_path, "df4MeanShift.joblib")
         #self.OneClassSVM_model_path = osp.join(self.model_path, "df5OneClassSVM.joblib")
         #self.LinearRegression_model_path = osp.join(self.model_path, "dfRegresion.joblib")
@@ -33,6 +35,7 @@ class ModelController:
 
         #Cargar los modelos
         self.RandomForest_model = joblib.load(self.RandomForest_model_path)
+        self.MLPRegressor_model = joblib.load(self.MLPRegressor_model_path)
         #self.MeanShift_model = joblib.load(self.MeanShift_model_path)
         #self.OneClassSVM_model = joblib.load(self.OneClassSVM_model_path)
         #self.LinearRegression_model = joblib.load(self.LinearRegression_model_path)
@@ -42,15 +45,22 @@ class ModelController:
         self.X_test_RF = ""
         self.Y_test_RF = ""
         self.y_pred_RF = ""
-        #TODO
+        
+        self.X_test_MLPRegressor = ""
+        self.Y_test_MLPRegressor = ""
+        self.y_pred_MLPRegressor = ""
+
+
+
 
         # Clase de preprocesamiento de la información
         self.d_processing_RF = DataPreprocessingRF()
+        self.d_processing_MLPRegressor = DataPreprocessingMLPRegressor()
         #self.d_processing_MS = DataPreprocessingMS()
         #TODO
 
 
-    def predict(self, input_data):
+    def predict_RF(self, input_data):
         print("ModelController.predict ->")
 
         # Generamos la partición de la información
@@ -72,7 +82,6 @@ class ModelController:
         #print(RF_result_df)
         #TODO
         
-
         #RF_result_df[f"Probabilidad Clase {self.d_processing_RF.get_cat_name(0)} (%)"] = y_pred_proba_svc[:, 0]
         #RF_result_df[f"Probabilidad Clase {self.d_processing_RF.get_cat_name(1)} (%)"] = y_pred_proba_svc[:, 1]
 
@@ -81,7 +90,6 @@ class ModelController:
         #y_pred_proba_rf = self.svc_model.predict_proba(X_test)
         #y_pred_proba_rf = np.round(y_pred_proba_rf * 100, 2)
         #TODO
-
 
         # Dataframe compilado
         #full_result_df = X_test.copy()
@@ -94,6 +102,27 @@ class ModelController:
         #full_result_df[f"Probabilidad Clase {self.d_processing.get_cat_name(1)} (%) RF"] = rf_result_df[f"Probabilidad Clase {self.d_processing.get_cat_name(1)} (%)"]
         #TODO
         return RF_result_df, self.y_pred_RF
+    
+
+
+    def predict_MLPRegressor(self, input_data):
+        print("ModelController.predict ->")
+
+        # Generamos la partición de la información
+        self.X_test_MLPRegressor = self.d_processing_MLPRegressor.transform(input_data)
+        #print(self.X_test_MLPRegressor)
+        
+        # Predicciones Isolation Forest, One Class SVM y Regresión Lineal
+        self.y_pred_MLPRegressor = self.MLPRegressor_model.predict(self.X_test_MLPRegressor)
+        #print("La predicción es:", self.y_pred_MLPRegressor)
+        
+        # Preparamos un dataframe para presentar al usuario final
+        MLPRegressor_result_df = self.X_test_MLPRegressor.copy()
+
+        MLPRegressor_result_df["Predicción"] = self.y_pred_MLPRegressor
+        #print(MLPRegressor_result_df)
+        
+        return MLPRegressor_result_df, self.y_pred_MLPRegressor
 
 
 
